@@ -35,6 +35,15 @@ button:hover {
     gap: 10px;
     padding: 10px;
     border-bottom: 1px solid #ddd;
+    min-height: 40px;
+}
+
+.todo-item input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.todo-item span {
+    flex: 1;
 }
 
 .delete-btn {
@@ -44,4 +53,39 @@ button:hover {
 
 .delete-btn:hover {
     background-color: #da190b;
+}
+
+.edit-input {
+    flex: 1;
+    padding: 8px;
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+.edit-btn {
+    background-color: #2196F3;
+    margin-right: 10px;
+}
+
+.edit-btn:hover {
+    background-color: #1976D2;
+}
+
+.save-btn {
+    background-color: #4CAF50;
+    margin-right: 10px;
+}
+
+.cancel-btn {
+    background-color: #607D8B;
+    margin-right: 10px;
+}
+
+.cancel-btn:hover {
+    background-color: #455A64;
+}
+
+.completed {
+    text-decoration: line-through;
+    color: #888;
 }
