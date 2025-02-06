@@ -89,3 +89,19 @@ button:hover {
     text-decoration: line-through;
     color: #888;
 }
+
+.due-date {
+    color: #666;
+    font-size: 0.9em;
+    margin-left: 10px;
+}
+
+.overdue {
+    color: #f44336;
+    font-weight: bold;
+}
+
+input[type="date"] {
+    padding: 8px;
+    margin-right: 10px;
+}

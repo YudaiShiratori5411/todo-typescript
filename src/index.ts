@@ -4,8 +4,9 @@ interface Todo {
     text: string;
     completed: boolean;
     isEditing: boolean;
-}
-
+    dueDate: Date | null;
+ }
+ 
 class TodoApp {
     private todos: Todo[] = [];
     private todoInput: HTMLInputElement;
@@ -25,17 +26,21 @@ class TodoApp {
 
     private addTodo(): void {
         const todoText = this.todoInput.value.trim();
+        const dueDateInput = document.getElementById('due-date') as HTMLInputElement;
+        
         if (todoText) {
             const todo: Todo = {
                 id: this.currentId++,
                 text: todoText,
                 completed: false,
-                isEditing: false
+                isEditing: false,
+                dueDate: dueDateInput.value ? new Date(dueDateInput.value) : null
             };
             
             this.todos.push(todo);
             this.renderTodo(todo);
             this.todoInput.value = '';
+            dueDateInput.value = '';
         }
     }
 
@@ -50,11 +55,15 @@ class TodoApp {
             editInput.value = todo.text;
             editInput.className = 'edit-input';
 
+            const dateInput = document.createElement('input');
+            dateInput.type = 'date';
+            dateInput.value = todo.dueDate ? todo.dueDate.toISOString().split('T')[0] : '';
+
             const saveButton = document.createElement('button');
             saveButton.textContent = '保存';
             saveButton.className = 'save-btn';
             saveButton.addEventListener('click', () => {
-                this.saveTodoEdit(todo.id, editInput.value);
+                this.saveTodoEdit(todo.id, editInput.value, dateInput.value);
             });
 
             const cancelButton = document.createElement('button');
@@ -65,6 +74,7 @@ class TodoApp {
             });
 
             li.appendChild(editInput);
+            li.appendChild(dateInput);
             li.appendChild(saveButton);
             li.appendChild(cancelButton);
         } else {
@@ -79,6 +89,17 @@ class TodoApp {
             const span = document.createElement('span');
             span.textContent = todo.text;
             span.className = todo.completed ? 'completed' : '';
+
+            const dateSpan = document.createElement('span');
+            dateSpan.className = 'due-date';
+            if (todo.dueDate) {
+                const today = new Date();
+                const dueDate = new Date(todo.dueDate);
+                if (dueDate < today && !todo.completed) {
+                    dateSpan.classList.add('overdue');
+                }
+                dateSpan.textContent = dueDate.toLocaleDateString();
+            }
 
             const editButton = document.createElement('button');
             editButton.textContent = '編集';
@@ -96,6 +117,7 @@ class TodoApp {
 
             li.appendChild(checkbox);
             li.appendChild(span);
+            li.appendChild(dateSpan);
             li.appendChild(editButton);
             li.appendChild(deleteButton);
         }
@@ -111,10 +133,11 @@ class TodoApp {
         }
     }
 
-    private saveTodoEdit(id: number, newText: string): void {
+    private saveTodoEdit(id: number, newText: string, newDate: string): void {
         const todo = this.todos.find(t => t.id === id);
         if (todo && newText.trim()) {
             todo.text = newText.trim();
+            todo.dueDate = newDate ? new Date(newDate) : null;
             todo.isEditing = false;
             this.renderTodos();
         }
@@ -128,7 +151,6 @@ class TodoApp {
         }
     }
 
-    // 既存のメソッドはそのまま
     private toggleTodo(id: number): void {
         const todo = this.todos.find(t => t.id === id);
         if (todo) {
