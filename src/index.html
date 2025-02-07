@@ -12,6 +12,11 @@
         <form id="todo-form">
             <input type="text" id="todo-input" placeholder="新しいタスクを入力">
             <input type="date" id="due-date">
+            <select id="priority-select">
+                <option value="high">優先度：高</option>
+                <option value="medium" selected>優先度：中</option>
+                <option value="low">優先度：低</option>
+            </select>
             <button type="submit">追加</button>
         </form>
         <ul id="todo-list"></ul>
