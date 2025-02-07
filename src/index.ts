@@ -1,3 +1,5 @@
+import './styles.css';
+
 // カテゴリの型定義
 interface Category {
     id: number;
@@ -32,9 +34,8 @@ class TodoApp {
         this.todoInput = document.getElementById('todo-input') as HTMLInputElement;
         this.todoList = document.getElementById('todo-list') as HTMLUListElement;
 
-        // LocalStorageからデータを読み込む
-        this.loadFromLocalStorage();
         this.loadCategoriesFromLocalStorage();
+        this.loadFromLocalStorage();
 
         const form = document.getElementById('todo-form') as HTMLFormElement;
         form.addEventListener('submit', (e) => {
@@ -79,7 +80,7 @@ class TodoApp {
         localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.todos));
     }
 
-    private saveCategoriestoLocalStorage(): void {
+    private saveCategoriesToLocalStorage(): void {
         localStorage.setItem(this.CATEGORY_STORAGE_KEY, JSON.stringify(this.categories));
     }
 
@@ -149,7 +150,7 @@ class TodoApp {
                 name
             };
             this.categories.push(category);
-            this.saveCategoriestoLocalStorage();
+            this.saveCategoriesToLocalStorage();
             this.renderCategories();
         }
     }
@@ -201,6 +202,12 @@ class TodoApp {
     private renderTodo(todo: Todo): void {
         const li = document.createElement('li');
         li.className = 'todo-item';
+        li.dataset.id = todo.id.toString();
+
+        // アニメーション用のタイミング調整
+        requestAnimationFrame(() => {
+            li.classList.add('show');
+        });
 
         if (todo.isEditing) {
             // 編集モードの表示
@@ -282,7 +289,7 @@ class TodoApp {
             // 優先順位表示
             const prioritySpan = document.createElement('span');
             prioritySpan.className = `priority-badge priority-${todo.priority}`;
-            prioritySpan.textContent = todo.priority === 'high' ? '高' : todo.priority === 'medium' ? '中' : '低';
+            prioritySpan.textContent = `優先度：${todo.priority === 'high' ? '高' : todo.priority === 'medium' ? '中' : '低'}`;
 
             // カテゴリ表示
             const categorySpan = document.createElement('span');
@@ -364,17 +371,23 @@ class TodoApp {
     }
 
     private deleteTodo(id: number): void {
-        this.todos = this.todos.filter(t => t.id !== id);
-        this.saveToLocalStorage();
-        this.renderTodos();
+        const todoElement = this.todoList.querySelector(`[data-id="${id}"]`);
+        if (todoElement) {
+            todoElement.classList.add('removing');
+            setTimeout(() => {
+                this.todos = this.todos.filter(t => t.id !== id);
+                this.saveToLocalStorage();
+                this.renderTodos();
+            }, 300); // CSSのtransitionと同じ時間
+        }
     }
 
     private filterByCategory(categoryId: number | null): void {
         const buttonElements = document.querySelectorAll('.category-btn');
         const buttons = Array.from(buttonElements);
-        
+
         buttons.forEach(btn => btn.classList.remove('active'));
-        
+
         if (categoryId === null) {
             buttons[0].classList.add('active');
             this.renderTodos();
